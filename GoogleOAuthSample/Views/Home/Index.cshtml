@@ -6,3 +6,93 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+@section Scripts {
+    <script>
+        // ========== NOTE start
+        // 需要把當前頁面URL設定在Google OAuth2.0 用戶端的 "已授權的 JavaScript 來源" 和 "已授權的重新導向 URI" 裡
+        // ex:這一頁開啟來的URL是 "https://localhost:7106"，就把這個URL註冊進去，若未上網頁正式上線，也必須把公開的URL註冊進去
+        // ========== NOTE end
+
+        // 設定 Google OAuth 2.0 用戶端ID
+        google_client_id = '';
+        // 設定登入成功後的callback函數
+        loginSucceedCallback = loginSucceed;
+        // 設定顯示登入UI的函數
+        signUI = showSigninUI;
+        // 設定處理Google登入callback的函數
+        handleGoogleCredentialResponse = googleSigninResponse;
+
+        // jquery loaded event
+        $(function () {
+            initializeGoogleAuth();
+        });
+
+        /**
+        * 處理Google登入回調
+        * @@param {Object} response - Google登入回調的回應對象
+        */
+        function googleSigninResponse(response) {
+            try {
+                const idToken = response.credential;
+                if (!idToken) {
+                    throw new Error('No ID token present in the response');
+                }
+
+                const parts = idToken.split('.');
+                if (parts.length !== 3) {
+                    throw new Error('ID token does not appear to be a valid JWT');
+                }
+
+                const payload = JSON.parse(decodeBase64Url(parts[1]));
+
+                currentUser = {
+                    name: payload.name,
+                    email: payload.email,
+                    imageUrl: payload.picture
+                };
+
+                updateUIForSignedInUser();
+                saveTokenToLocalStorage(idToken);
+                if (loginSucceedCallback) {
+                    loginSucceedCallback();
+                }
+            } catch (error) {
+                console.error('Error handling credential response:', error);
+                // Handle the error appropriately, e.g., show an error message to the user
+            }
+        }
+
+        /**
+        * 登入成功
+        */
+        function loginSucceed() {
+            console.log('loginSucceed');
+            updateUIForSignedInUser();
+        }
+
+        /**
+         * 顯示需要登入的UI
+         */
+        function showSigninUI() {
+            document.getElementById('googleSignInButton').classList.remove('d-none');
+            document.getElementById('userInfo').classList.add('d-none');
+            google.accounts.id.renderButton(
+                document.getElementById("googleSignInButton"),
+                { theme: "outline", size: "large" }
+            );
+            google.accounts.id.prompt();
+        }
+
+        /**
+         * 為已登入用戶更新UI
+         */
+        function updateUIForSignedInUser() {
+            document.getElementById('googleSignInButton').classList.add('d-none');
+            document.getElementById('userInfo').classList.remove('d-none');
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userImage').src = currentUser.imageUrl;
+        }
+
+    </script>
+}
