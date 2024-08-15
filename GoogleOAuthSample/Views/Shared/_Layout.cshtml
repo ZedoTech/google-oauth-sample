@@ -26,14 +26,23 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
-                    <div class="d-flex align-items-center">
-                        <div id="googleSignInButton" class="d-inline-block me-2"></div>
-                        <div id="userInfo" class="d-none d-flex align-items-center">
-                            <img id="userImage" src="" alt="User Avatar" class="rounded-circle me-2" width="32" height="32">
-                            <span id="userName" class="me-2 d-none d-sm-inline"></span>
-                            <button id="signOutButton" class="btn btn-outline-secondary btn-sm">登出</button>
+                    @if(User.Identity.IsAuthenticated)
+                    {
+                        <div class="d-flex align-items-center" title="@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email)?.Value">
+                            <div id="googleSignInButton" class="d-inline-block me-2"></div>
+                            <div id="userInfo" class="d-flex align-items-center">
+                                <img id="userImage" src="@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Uri)?.Value" alt="User Avatar" class="rounded-circle me-2" width="32" height="32">
+                                <span id="userName" class="me-2 d-sm-inline">@User.Identity.Name</span>
+                                <a id="signOutButton" href="/logout" class="btn btn-outline-secondary btn-sm">登出</a>
+                            </div>
                         </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center">
+                            <a class="btn btn-outline-secondary btn-sm" href="login">登入</a>
+                        </div>
+                    }
                 </div>
             </div>
         </nav>

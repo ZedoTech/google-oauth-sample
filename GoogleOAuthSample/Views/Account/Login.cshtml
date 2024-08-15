@@ -1,0 +1,105 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="text-center">
+    <h1>Welcome to ZEDOTECH</h1>
+    <p>Please log in to access your account and start using our services.</p>
+
+    <div id="googleSignInButton" class="d-inline-block me-2"></div>
+    <div id="userInfo" class="d-none d-flex align-items-center">
+        <img id="userImage" src="" alt="User Avatar" class="rounded-circle me-2" width="32" height="32">
+        <span id="userName" class="me-2 d-none d-sm-inline"></span>
+        <button id="signOutButton" class="btn btn-outline-secondary btn-sm">登出</button>
+    </div>
+</div>
+<form method="post" action="/Account/Login" class="d-none">
+    <div class="text-center">
+        <input type="text" id="token" name="token" value="" />
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        // ========== NOTE start
+        // 需要把當前頁面URL設定在Google OAuth2.0 用戶端的 "已授權的 JavaScript 來源" 和 "已授權的重新導向 URI" 裡
+        // ex:這一頁開啟來的URL是 "https://localhost:7106"，就把這個URL註冊進去，若未上網頁正式上線，也必須把公開的URL註冊進去
+        // ========== NOTE end
+
+        // 設定 Google OAuth 2.0 用戶端ID
+        google_client_id = '';
+        // 設定登入成功後的callback函數
+        loginSucceedCallback = loginSucceed;
+        // 設定顯示登入UI的函數
+        signUI = showSigninUI;
+        // 設定處理Google登入callback的函數
+        handleGoogleCredentialResponse = googleSigninResponse;
+
+        // jquery loaded event
+        $(function () {
+            initializeGoogleAuth();
+        });
+
+        /**
+        * 處理Google登入回調
+        * @@param {Object} response - Google登入回調的回應對象
+        */
+        function googleSigninResponse(response) {
+            try {
+                const idToken = response.credential;
+                if (!idToken) {
+                    throw new Error('No ID token present in the response');
+                }
+
+                const parts = idToken.split('.');
+                if (parts.length !== 3) {
+                    throw new Error('ID token does not appear to be a valid JWT');
+                }
+
+                const payload = JSON.parse(decodeBase64Url(parts[1]));
+
+                currentUser = {
+                    id: payload.sub,
+                    name: payload.name,
+                    email: payload.email,
+                    imageUrl: payload.picture
+                };
+                saveTokenToLocalStorage(idToken);
+                loginSucceed();
+
+            } catch (error) {
+                console.error('Error handling credential response:', error);
+                // Handle the error appropriately, e.g., show an error message to the user
+            }
+        }
+
+        /**
+        * 登入成功
+        */
+        function loginSucceed() {
+            console.log('loginSucceed');
+            const token = localStorage.getItem('googleToken');
+            document.getElementById('token').value = token;
+            // remove localstorage
+            localStorage.removeItem('googleToken');
+            document.querySelector('form').submit();
+        }
+
+        /**
+         * 顯示需要登入的UI
+         */
+        function showSigninUI() {
+            document.getElementById('googleSignInButton').classList.remove('d-none');
+            document.getElementById('userInfo').classList.add('d-none');
+            google.accounts.id.renderButton(
+                document.getElementById("googleSignInButton"),
+                { theme: "outline", size: "large" }
+            );
+            google.accounts.id.prompt();
+        }
+
+    </script>
+}

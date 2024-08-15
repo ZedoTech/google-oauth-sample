@@ -59,6 +59,7 @@ function checkStoredToken() {
 
             if (Date.now() < expirationTime) {
                 currentUser = {
+                    id: payload.sub,
                     name: payload.name,
                     email: payload.email,
                     imageUrl: payload.picture
