@@ -5,18 +5,51 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="text-center">
-    <h1>Welcome to ZEDOTECH</h1>
-    <p>Please log in to access your account and start using our services.</p>
+<div class="d-flex align-items-center justify-content-center mt-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="login-container">
+                    <h2 class="text-center mb-4">Login</h2>
+                    <form>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mb-1">Login</button>
 
-    <div id="googleSignInButton" class="d-inline-block me-2"></div>
-    <div id="userInfo" class="d-none d-flex align-items-center">
-        <img id="userImage" src="" alt="User Avatar" class="rounded-circle me-2" width="32" height="32">
-        <span id="userName" class="me-2 d-none d-sm-inline"></span>
-        <button id="signOutButton" class="btn btn-outline-secondary btn-sm">登出</button>
+                        <div id="googleSignInButton" class="w-100 mb-3"></div>
+                        <div id="userInfo" class="d-none w-100 mb-3">
+                            <button class="btn btn-light w-100 text-start position-relative">
+                                <img id="userImage" src="" alt="User Avatar" class="rounded-circle me-2" width="24" height="24">
+                                <span id="userName" class="text-truncate" style="max-width: 80%;"></span>
+                                <img src="path_to_google_icon.png" alt="Google" class="position-absolute end-0 top-50 translate-middle-y me-2" width="20" height="20">
+                            </button>
+                        </div>
+
+
+                    </form>
+                    <div class="mt-3 text-center">
+                        <a href="#" class="">Forgot password?</a>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <span class="">Don't have an account? </span>
+                        <a href="#">Register</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<form method="post" action="/Account/Login" class="d-none">
+<form method="post" action="/Account/Login" class="d-none" id="googleForm">
     <div class="text-center">
         <input type="text" id="token" name="token" value="" />
     </div>
@@ -85,7 +118,8 @@
             document.getElementById('token').value = token;
             // remove localstorage
             localStorage.removeItem('googleToken');
-            document.querySelector('form').submit();
+
+            $('#googleForm').submit();
         }
 
         /**
@@ -96,7 +130,11 @@
             document.getElementById('userInfo').classList.add('d-none');
             google.accounts.id.renderButton(
                 document.getElementById("googleSignInButton"),
-                { theme: "outline", size: "large" }
+                {
+                    theme: "outline",
+                    size: "large",
+                    width: document.getElementById("googleSignInButton").offsetWidth
+                }
             );
             google.accounts.id.prompt();
         }

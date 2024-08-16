@@ -7,32 +7,83 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GoogleOAuthSample.styles.css" asp-append-version="true" />
+    <style>
+        body, html {
+            height: 100%;
+        }
+
+        .bg-image {
+            background-image: url('/images/background.webp');
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+            .login-container h2,
+            .login-container label,
+            .login-container .form-check-label,
+            .login-container a,
+            .login-container span {
+                color: #fff;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+            }
+
+            .login-container input[type="text"],
+            .login-container input[type="password"] {
+                background-color: rgba(255, 255, 255, 0.1);
+                border: none;
+                color: #fff;
+            }
+
+                .login-container input[type="text"]::placeholder,
+                .login-container input[type="password"]::placeholder {
+                    color: rgba(255, 255, 255, 0.7);
+                }
+
+            .login-container .btn-primary {
+                background-color: rgba(0, 123, 255, 0.7);
+                border: none;
+            }
+
+                .login-container .btn-primary:hover {
+                    background-color: rgba(0, 123, 255, 0.9);
+                }
+    </style>
 </head>
-<body>
+<body class="bg-image">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebApplication1</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">GoogleOAuthSample</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        @* <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li> *@
                     </ul>
-                    @if(User.Identity.IsAuthenticated)
+                    @if (User.Identity.IsAuthenticated)
                     {
                         <div class="d-flex align-items-center" title="@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email)?.Value">
                             <div id="googleSignInButton" class="d-inline-block me-2"></div>
                             <div id="userInfo" class="d-flex align-items-center">
                                 <img id="userImage" src="@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Uri)?.Value" alt="User Avatar" class="rounded-circle me-2" width="32" height="32">
-                                <span id="userName" class="me-2 d-sm-inline">@User.Identity.Name</span>
+                                <span id="userName" class="me-2 d-sm-inline text-light">@User.Identity.Name</span>
                                 <a id="signOutButton" href="/logout" class="btn btn-outline-secondary btn-sm">登出</a>
                             </div>
                         </div>
@@ -41,23 +92,22 @@
                     {
                         <div class="d-flex align-items-center">
                             <a class="btn btn-outline-secondary btn-sm" href="login">登入</a>
+                            <a id="signOutButton" href="/logout" class="btn btn-outline-secondary btn-sm d-none">登出</a>
                         </div>
                     }
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - GoogleOAuthSample - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    @RenderBody()
+
+    <footer class="border-top footer text-light">
+        <div class="container-fluid">
+            &copy; 2021 - GoogleOAuthSample - <a href="https://zedotech.com">ZEDOTECH</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
